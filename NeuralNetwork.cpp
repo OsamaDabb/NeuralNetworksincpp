@@ -5,208 +5,7 @@
 #include<random>
 #include <iomanip>
 
-
-class Matrix
-{
-public:
-	int length, width;
-	std::vector<std::vector<double>> values;
-	Matrix(int l, int w) : length(l), width(w), values(l, std::vector<double>(w, 0)) {};
-
-	void randomize(double mean, double var) {
-
-		std::default_random_engine generator;
-		std::normal_distribution<double> distribution(mean, var);
-
-		for (int i = 0; i < length; i++) {
-
-			for (int j = 0; j < width; j++) {
-				values[i][j] = distribution(generator);
-			}
-		}
-	}
-
-	void print() {
-
-
-		for (std::vector<double> vec : values) {
-			std::cout << "[ ";
-			for (double val : vec) {
-				std::cout << val << " ";
-			}
-			std::cout << "]" << std::endl;
-		}
-
-	}
-
-	void print_size() {
-		std::cout << "(" << length << ", " << width << ")" << std::endl;
-	}
-};
-
-void print(std::vector<double> vec) {
-
-	std::cout << "{ ";
-	for (double val : vec) {
-		std::cout << val << " ";
-	}
-	std::cout << "}" << std::endl;
-
-}
-
-
-Matrix multiply(const Matrix& m1, const Matrix& m2) {
-
-	Matrix result(m1.length, m2.width);
-
-	for (int i = 0; i < m1.length; i++) {
-
-		for (int c = 0; c < m2.width; c++) {
-
-			for (int j = 0; j < m1.width; j++) {
-
-				result.values[i][c] += m1.values[i][j] * m2.values[j][c];
-			}
-		}
-	}
-
-	return result;
-}
-
-std::vector<double> multiply(const Matrix& m1, const std::vector<double>& x) {
-
-	std::vector<double> result(m1.length);
-
-	for (int i = 0; i < m1.length; i++) {
-
-		result[i] = 0;
-
-		for (int j = 0; j < m1.width; j++) {
-
-			result[i] += m1.values[i][j] * x[j];
-		}
-
-	}
-
-	return result;
-}
-
-Matrix multiply(const Matrix& m1, const double& c) {
-
-	Matrix result(m1.length, m1.width);
-
-	for (int i = 0; i < m1.length; i++) {
-
-		for (int j = 0; j < m1.width; j++) {
-
-			result.values[i][j] = m1.values[i][j] * c;
-		}
-
-	}
-
-	return result;
-}
-
-Matrix add(const Matrix& m1, const Matrix& m2) {
-
-	Matrix result(m1.length, m1.width);
-
-	for (int i = 0; i < m1.length; i++) {
-		for (int j = 0; j < m1.width; j++) {
-			result.values[i][j] = m1.values[i][j] + m2.values[i][j];
-		}
-	}
-
-	return result;
-}
-
-Matrix sub(const Matrix& m1, const Matrix& m2) {
-
-	Matrix result(m1.length, m1.width);
-
-	for (int i = 0; i < m1.length; i++) {
-		for (int j = 0; j < m1.width; j++) {
-			result.values[i][j] = m1.values[i][j] - m2.values[i][j];
-		}
-	}
-
-	return result;
-}
-
-
-std::vector<double> add(const std::vector<double>& v1, const std::vector<double>& v2) {
-
-	std::vector<double> result(v1.size());
-
-	for (int i = 0; i < v1.size(); i++) {
-
-		result[i] = v1[i] + v2[i];
-	}
-
-	return result;
-}
-
-std::vector<double> sub(const std::vector<double>& v1, const std::vector<double>& v2) {
-
-	std::vector<double> result(v1.size());
-
-	for (int i = 0; i < v1.size(); i++) {
-
-		result[i] = v1[i] - v2[i];
-	}
-
-	return result;
-}
-
-std::vector<double> operator+(const std::vector<double>& v1, const std::vector<double>& v2) {
-	return add(v1, v2);
-}
-
-Matrix transpose(const Matrix& input) {
-	Matrix result(input.width, input.length);
-
-	for (int i = 0; i < input.length; i++) {
-		for (int j = 0; j < input.width; j++) {
-			result.values[j][i] = input.values[i][j];
-		}
-	}
-
-	return result;
-}
-
-Matrix transpose(const std::vector<double>& input) {
-
-	Matrix result(1, input.size());
-
-	for (int i = 0; i < input.size(); i++) {
-		result.values[0][i] = input[i];
-	}
-
-	return result;
-}
-
-Matrix vecToMat(const std::vector<double>& input) {
-
-	Matrix result(input.size(), 1);
-
-	for (int i = 0; i < input.size(); i++) {
-		result.values[i][0] = input[i];
-	}
-
-	return result;
-
-}
-
-std::vector<double> matToVec(const Matrix& input) {
-
-	std::vector<double> result(input.length, 0);
-
-	for (int i = 0; i < input.length; i++) {
-		result[i] = input.values[i][0];
-	}
-
-	return result;
-}
+#include "utils.h"
 
 void ReLUOutput(std::vector<double>& input) {
 
@@ -217,9 +16,9 @@ void ReLUOutput(std::vector<double>& input) {
 	}
 }
 
-Matrix ReLUGradient(std::vector<double> prev_in, const Matrix& dldf) {
+utils::Matrix ReLUGradient(std::vector<double> prev_in, const utils::Matrix& dldf) {
 
-	Matrix result(dldf.length, 1);
+	utils::Matrix result(dldf.length, 1);
 
 	for (int i = 0; i < dldf.length; i++) {
 		if (prev_in[i] > 0) {
@@ -243,9 +42,9 @@ void sigmoidOutput(std::vector<double>& input) {
 
 }
 
-Matrix sigmoidGradient(std::vector<double> prev_in, const Matrix& dldf) {
+utils::Matrix sigmoidGradient(std::vector<double> prev_in, const utils::Matrix& dldf) {
 
-	Matrix result(dldf.length, 1);
+	utils::Matrix result(dldf.length, 1);
 
 	std::vector<double> sig = prev_in;
 	sigmoidOutput(sig);
@@ -286,7 +85,7 @@ public:
 
 		}
 
-		std::vector<double> result = multiply(weights, input) + biases;
+		std::vector<double> result = utils::add(multiply(weights, input), biases);
 
 		pre_activation = result;
 
@@ -300,7 +99,7 @@ public:
 		return result;
 	}
 
-	Matrix gradient(Matrix dldf) {
+	utils::Matrix gradient(utils::Matrix dldf) {
 
 		if (activation == "ReLU") {
 			dldf = ReLUGradient(pre_activation, dldf);
@@ -309,7 +108,7 @@ public:
 			dldf = sigmoidGradient(pre_activation, dldf);
 		}
 
-		Matrix grad = multiply(dldf, transpose(prev_in));
+		utils::Matrix grad = multiply(dldf, transpose(prev_in));
 
 		w_gradients = add(w_gradients, grad);
 		b_gradients = add(b_gradients, dldf);
@@ -320,36 +119,36 @@ public:
 	void update_weights(double lr) {
 
 		if (momentum > 0) {
-			w_momentum = add(multiply(w_gradients, (1 - momentum)), multiply(w_momentum, momentum));
-			b_momentum = add(multiply(b_gradients, (1 - momentum)), multiply(b_momentum, momentum));
+			w_momentum = utils::add(utils::multiply(w_gradients, (1 - momentum)), utils::multiply(w_momentum, momentum));
+			b_momentum = utils::add(utils::multiply(b_gradients, (1 - momentum)), utils::multiply(b_momentum, momentum));
 
-			weights = sub(weights, multiply(w_momentum, lr / count));
-			biases = sub(biases, matToVec(multiply(b_momentum, lr / count)));
+			weights = utils::sub(weights, utils::multiply(w_momentum, lr / count));
+			biases = utils::sub(biases, utils::matToVec(multiply(b_momentum, lr / count)));
 		}
 		else{
-			weights = sub(weights, multiply(w_gradients, lr / count));
-			biases = sub(biases, matToVec(multiply(b_gradients, lr / count)));
+			weights = utils::sub(weights, utils::multiply(w_gradients, lr / count));
+			biases = utils::sub(biases, utils::matToVec(multiply(b_gradients, lr / count)));
 		}
 
-		w_gradients = multiply(w_gradients, 0);
-		b_gradients = multiply(b_gradients, 0);
+		w_gradients = utils::multiply(w_gradients, 0);
+		b_gradients = utils::multiply(b_gradients, 0);
 
 		count = 0;
 	}
 
-	Matrix weights;
+	utils::Matrix weights;
 	std::vector<double> biases;
 
 	int count;
-	Matrix w_gradients;
-	Matrix b_gradients;
-	Matrix prev_in;
+	utils::Matrix w_gradients;
+	utils::Matrix b_gradients;
+	utils::Matrix prev_in;
 	std::vector<double> pre_activation;
 	std::string activation;
 	int input_size, output_size;
 	double momentum;
-	Matrix w_momentum;
-	Matrix b_momentum;
+	utils::Matrix w_momentum;
+	utils::Matrix b_momentum;
 };
 
 //network class
@@ -375,7 +174,7 @@ public:
 
 	void compute_gradient(double y_hat, double y) {
 
-		Matrix dldf(1, 1);
+		utils::Matrix dldf(1, 1);
 
 		if (loss_f == "regression") {
 			dldf.values[0] = { 2 * (y_hat - y) };
@@ -426,7 +225,7 @@ int main() {
 	layers.push_back(l2);
 	layers.push_back(l3);
 
-	Matrix data(1000, 2);
+	utils::Matrix data(1000, 2);
 	data.randomize(0, 2);
 
 	std::vector<double> labels(data.length, 0);
@@ -453,7 +252,7 @@ int main() {
 
 			if (ep % 10 == 0 && i % 24 == 0) {
 				std::cout << "Input: ";
-				print(data.values[i]);
+				utils::print(data.values[i]);
 				std::cout << "Output: " << y_hat << std::endl;
 
 				/*

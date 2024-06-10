@@ -131,6 +131,9 @@
     <ClCompile Include="activations.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Header.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
